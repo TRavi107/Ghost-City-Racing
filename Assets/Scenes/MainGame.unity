@@ -7846,6 +7846,8 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: 798246c5078bc7c44974f29fe56d1758, type: 3}
   - sound: 1
     audioClip: {fileID: 8300000, guid: 061d950176c28014687da95477670be5, type: 3}
+  - sound: 2
+    audioClip: {fileID: 8300000, guid: c932023a65398934db95f3521d8f00ba, type: 3}
   availableColor:
   - {r: 1.3075913e+22, g: 0.0000000025641624, b: 0.000000013225466, a: 0.00000016501951}
   - {r: 1.3519218e+22, g: 0.00000016877813, b: 0.000010860901, a: 0.0000008545203}

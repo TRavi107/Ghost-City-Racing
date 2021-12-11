@@ -49,6 +49,7 @@ MonoBehaviour:
   - RPC_SetMyNickName
   - RPC_AddMeToList
   - RPC_UpdateWayPointTime
+  - RPC_Skid
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

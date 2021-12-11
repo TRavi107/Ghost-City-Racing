@@ -329,11 +329,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62e41803d0d2b94b8d2a9b52d004810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skidmarksController: {fileID: 0}
   myColor: {r: 0, g: 0, b: 0, a: 0}
   _camera: {fileID: 2196840103614299405}
   controler: {fileID: 6026452485704676088}
   nickName: 
   miniMapVision: {fileID: 7861894160891597243}
+  DriftSoundDuration: 2
 --- !u!82 &2060787699709006252
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1126,6 +1128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 7193159486902237057}
   skidmarksController: {fileID: 0}
+  smokePrefab: {fileID: 100000, guid: 98c58c8dd46640c49bb5f557afafea7c, type: 3}
   wheelCollider: {fileID: 0}
   controller: {fileID: 6026452485704676088}
   DriftSoundDuration: 2
@@ -1205,6 +1208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 7193159486902237057}
   skidmarksController: {fileID: 0}
+  smokePrefab: {fileID: 100000, guid: 98c58c8dd46640c49bb5f557afafea7c, type: 3}
   wheelCollider: {fileID: 0}
   controller: {fileID: 6026452485704676088}
   DriftSoundDuration: 2
@@ -1318,6 +1322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 7193159486902237057}
   skidmarksController: {fileID: 0}
+  smokePrefab: {fileID: 100000, guid: 98c58c8dd46640c49bb5f557afafea7c, type: 3}
   wheelCollider: {fileID: 0}
   controller: {fileID: 6026452485704676088}
   DriftSoundDuration: 2
@@ -1397,6 +1402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 7193159486902237057}
   skidmarksController: {fileID: 0}
+  smokePrefab: {fileID: 100000, guid: 98c58c8dd46640c49bb5f557afafea7c, type: 3}
   wheelCollider: {fileID: 0}
   controller: {fileID: 6026452485704676088}
   DriftSoundDuration: 2

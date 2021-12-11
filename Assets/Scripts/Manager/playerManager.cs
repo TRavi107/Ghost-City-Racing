@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstantiateMagicCallback
 {
+
+    [SerializeField]
+    Skidmarks skidmarksController;
     public Color myColor;
     public static playerManager instance;
     public Camera _camera;
@@ -17,6 +20,9 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
     private Quaternion remoterotation;
 
     public SpriteRenderer miniMapVision;
+
+    private float lastDriftSoundPlayed = 0;
+    public float DriftSoundDuration;
 
 
     public List<CheckPoint> checkPoints =new List<CheckPoint>() ;
@@ -33,6 +39,8 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
                 checkPoints.Add(new CheckPoint(i, false, 0));
             }
         }
+        skidmarksController = RaceManager.instance.skidMarkController;
+
         if (!photonView.IsMine)
         {
             maxVelocity = GetComponent<controllerDr>().maxVelocity;
@@ -101,6 +109,26 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
 
+    }
+    public void Skid(float skidTotal, int lastSkid, Vector3 normal, Vector3 _position, float radius)
+    {
+        photonView.RPC("RPC_Skid", RpcTarget.All,skidTotal,lastSkid,normal,_position,radius);
+    }
+
+    [PunRPC]
+    void RPC_Skid(float skidTotal,int lastSkid,Vector3 normal,Vector3 _position,float radius)
+    {
+
+        float intensity = Mathf.Clamp01(skidTotal / 2);
+        // Account for further movement since the last FixedUpdate
+        Vector3 skidPoint = _position - transform.up * radius;//wheelHitInfo.point;// + (rb.velocity * (Time.time - lastFixedUpdateTime));
+
+        lastSkid = skidmarksController.AddSkidMark(skidPoint,normal, intensity, lastSkid);
+        if (lastDriftSoundPlayed + DriftSoundDuration < Time.time)
+        {
+            SoundManager.PlaySound(Sound.skid, transform.position);
+            lastDriftSoundPlayed = Time.time;
+        }
     }
 
     public void ResetToLastCheckPoint()

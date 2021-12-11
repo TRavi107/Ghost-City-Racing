@@ -154,21 +154,25 @@ public class controllerDr : MonoBehaviourPunCallbacks
         if(gearChange == gearBox.automatic){
             if(engineRPM > maxRPM && gearNum < gears.Length-1 && !reverse && checkGears() ){
                 gearNum ++;
+                SoundManager.PlaySound(Sound.gearchange, transform.position);
                 //manager.changeGear();
                 return;
             }
-        }
-            //manual
-        else{
-            if(Input.GetKeyDown(KeyCode.E)){
-                gearNum ++;
+            if (engineRPM < minRPM && gearNum > 0)
+            {
+                gearNum--;
+                SoundManager.PlaySound(Sound.gearchange, transform.position);
                 //manager.changeGear();
             }
         }
-        if(engineRPM < minRPM && gearNum > 0){
-            gearNum --;
-            //manager.changeGear();
-        }
+            //manual
+        //else{
+        //    if(Input.GetKeyDown(KeyCode.E)){
+        //        gearNum ++;
+        //        //manager.changeGear();
+        //    }
+        //}
+        
 
     }
  

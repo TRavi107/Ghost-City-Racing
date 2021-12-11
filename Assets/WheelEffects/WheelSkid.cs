@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class WheelSkid : MonoBehaviour {
 	Rigidbody rb;
 	[SerializeField]
 	Skidmarks skidmarksController;
+
+	public GameObject smokePrefab;
+	private GameObject smokeEffect;
 
 	// END INSPECTOR SETTINGS
 
@@ -68,19 +72,43 @@ public class WheelSkid : MonoBehaviour {
 			if (skidTotal>SKID_FX_SPEED)
 			{
 
-				float intensity = Mathf.Clamp01(skidTotal / 2);
-				// Account for further movement since the last FixedUpdate
-				Vector3 skidPoint = wheelCollider.transform.position - wheelCollider.transform.up * wheelCollider.radius;//wheelHitInfo.point;// + (rb.velocity * (Time.time - lastFixedUpdateTime));
+                float intensity = Mathf.Clamp01(skidTotal / 2);
+                // Account for further movement since the last FixedUpdate
+                Vector3 skidPoint = wheelCollider.transform.position - wheelCollider.transform.up * wheelCollider.radius;//wheelHitInfo.point;// + (rb.velocity * (Time.time - lastFixedUpdateTime));
 
-				lastSkid = skidmarksController.AddSkidMark(skidPoint, wheelHitInfo.normal, intensity, lastSkid);
+                lastSkid = skidmarksController.AddSkidMark(skidPoint, wheelHitInfo.normal, intensity, lastSkid);
                 if (lastDriftSoundPlayed + DriftSoundDuration < Time.time)
                 {
                     SoundManager.PlaySound(Sound.skid, transform.position);
                     lastDriftSoundPlayed = Time.time;
                 }
+                if (smokeEffect == null)
+                {
+					smokeEffect = Instantiate(smokePrefab, transform);
+					if (!smokeEffect.GetComponent<ParticleSystem>().isPlaying)
+					{
+						smokeEffect.GetComponent<ParticleSystem>().Play();
+					}
+				}
+				else
+                {
+					if (!smokeEffect.GetComponent<ParticleSystem>().isPlaying)
+					{
+						smokeEffect.GetComponent<ParticleSystem>().Play();
+					}
+				}
+                //GetComponentInParent<playerManager>().Skid(skidTotal,lastSkid, wheelHitInfo.normal, wheelCollider.transform.position, wheelCollider.radius);
             }
 			else
 			{
+				if (smokeEffect != null)
+				{
+					if (smokeEffect.GetComponent<ParticleSystem>().isPlaying)
+					{
+						//smokeEffect.GetComponent<ParticleSystem>().Stop();
+					}
+
+				}
 				lastSkid = -1;
 			}
 		}
@@ -91,9 +119,14 @@ public class WheelSkid : MonoBehaviour {
 		
 	}
 
-	// #### PUBLIC METHODS ####
+    private void DisableSmoke()
+    {
 
-	// #### PROTECTED/PRIVATE METHODS ####
+    }
+
+    // #### PUBLIC METHODS ####
+
+    // #### PROTECTED/PRIVATE METHODS ####
 
 
 }
