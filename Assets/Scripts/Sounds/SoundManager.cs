@@ -30,7 +30,7 @@ public static class SoundManager
                 }
                 AudioSource audiosource = driftSoundSource.GetComponent<AudioSource>();
                 driftSoundSource.transform.position = pos;
-                audiosource.volume = 0.5f;
+                audiosource.volume = 0.2f;
                 audiosource.PlayOneShot(GameAssets.instance.GetSoundClip(Sound.skid));
                 break;
 

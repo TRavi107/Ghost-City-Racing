@@ -181,6 +181,7 @@ public class NetManager : MonoBehaviourPunCallbacks
                 }
             }
         }
+        print("called");
     }
 
 

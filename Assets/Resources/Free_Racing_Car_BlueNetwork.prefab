@@ -336,6 +336,7 @@ MonoBehaviour:
   nickName: 
   miniMapVision: {fileID: 7861894160891597243}
   DriftSoundDuration: 2
+  raceIsOver: 0
 --- !u!82 &2060787699709006252
 AudioSource:
   m_ObjectHideFlags: 0

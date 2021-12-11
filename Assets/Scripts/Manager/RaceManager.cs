@@ -175,14 +175,14 @@ public class RaceManager : MonoBehaviourPun
 
     }
 
-    public void PlayerEnter(playerManager player,int wayPoint)
+    public void PlayerEnter(playerManager player,int wayPoint,bool isOver=false)
     {
-        photonView.RPC("RPC_UpdateWayPointTime", RpcTarget.All, player.nickName, wayPoint);
+        photonView.RPC("RPC_UpdateWayPointTime", RpcTarget.All, player.nickName, wayPoint,isOver);
         
     }
 
     [PunRPC]
-    private void RPC_UpdateWayPointTime(string name,int _checkPointIndex)
+    private void RPC_UpdateWayPointTime(string name,int _checkPointIndex,bool isOver)
     {
         foreach (Participant item in raceParticipants)
         {
@@ -190,6 +190,17 @@ public class RaceManager : MonoBehaviourPun
             {
                 item.playerManager.checkPoints[_checkPointIndex].Iscompleted = true;
                 item.playerManager.checkPoints[_checkPointIndex].completedTime = Time.time;
+                if (isOver)
+                {
+                    if (item.playerManager.nickName == me.nickName)
+                    {
+                        ShowMessage("You are " + (raceParticipants.IndexOf(item)+1).ToString());
+                        me.raceIsOver = true;
+                        me.GetComponent<controllerDr>().enabled =false;
+                        me.GetComponent<Rigidbody>().drag = 2;
+                        return;
+                    }
+                }
                 item.distanceTravelled = 0;
                 for (int i=0;i<item.playerManager.checkPoints.Count;i++)
                 {

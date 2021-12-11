@@ -28,7 +28,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
     public List<CheckPoint> checkPoints =new List<CheckPoint>() ;
 
     private bool ghostMode=false;
-
+    public bool raceIsOver=false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -81,19 +81,22 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
         if (photonView.IsMine)
         {
-            if (!ghostMode)
-            {
-                checkAFK();
-            }
-            else
-            {
-                if (ghostTimer > 10)
+            
+            if (!raceIsOver) { 
+                if (!ghostMode)
                 {
-                    ghostTimer = 0;
-                    ghostMode = false;
+                    checkAFK();
                 }
                 else
-                    ghostTimer += Time.deltaTime;
+                {
+                    if (ghostTimer > 10)
+                    {
+                        ghostTimer = 0;
+                        ghostMode = false;
+                    }
+                    else
+                        ghostTimer += Time.deltaTime;
+                }
             }
             return;
         }
@@ -109,26 +112,6 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
 
-    }
-    public void Skid(float skidTotal, int lastSkid, Vector3 normal, Vector3 _position, float radius)
-    {
-        photonView.RPC("RPC_Skid", RpcTarget.All,skidTotal,lastSkid,normal,_position,radius);
-    }
-
-    [PunRPC]
-    void RPC_Skid(float skidTotal,int lastSkid,Vector3 normal,Vector3 _position,float radius)
-    {
-
-        float intensity = Mathf.Clamp01(skidTotal / 2);
-        // Account for further movement since the last FixedUpdate
-        Vector3 skidPoint = _position - transform.up * radius;//wheelHitInfo.point;// + (rb.velocity * (Time.time - lastFixedUpdateTime));
-
-        lastSkid = skidmarksController.AddSkidMark(skidPoint,normal, intensity, lastSkid);
-        if (lastDriftSoundPlayed + DriftSoundDuration < Time.time)
-        {
-            SoundManager.PlaySound(Sound.skid, transform.position);
-            lastDriftSoundPlayed = Time.time;
-        }
     }
 
     public void ResetToLastCheckPoint()
@@ -150,7 +133,9 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         this.transform.position = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).position;
                                 
-        this.transform.rotation = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation;
+        this.transform.rotation =Quaternion.Euler (RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.x,
+            RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.y +180,
+            RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.z);
         GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
@@ -244,14 +229,24 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
     {
         if (other.gameObject.tag == "checkPoints")
         {
-            for (int i = 0; i < checkPoints.Count; i++)
+            if (!raceIsOver)
             {
-                if (checkPoints[i].checkPointIndex == other.gameObject.transform.GetSiblingIndex())
+                for (int i = 0; i < checkPoints.Count; i++)
                 {
-                    if (checkPoints[i].Iscompleted != true)
+                    if (checkPoints[i].checkPointIndex == other.gameObject.transform.GetSiblingIndex())
                     {
-                        RaceManager.instance.PlayerEnter(this, i);
-                        print(i);
+                        if (checkPoints[i].Iscompleted != true)
+                        {
+                            if (other.gameObject.name == "checkpoint 1 (874)")
+                            {
+                                print((i, RaceManager.instance.checkPointsTransform.childCount));
+                                RaceManager.instance.PlayerEnter(this, i, true);
+                            }
+                            else
+                            {
+                                RaceManager.instance.PlayerEnter(this, i);
+                            }
+                        }
                     }
                 }
             }

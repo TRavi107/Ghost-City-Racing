@@ -66,8 +66,6 @@ public class WheelSkid : MonoBehaviour {
 			wheelSpin = Mathf.Max(0, wheelSpin * (10 - carForwardVel));
 
 			//skidTotal += wheelSpin;
-
-			print(( skidTotal));
 			// Skid if we should
 			if (skidTotal>SKID_FX_SPEED)
 			{
@@ -105,7 +103,7 @@ public class WheelSkid : MonoBehaviour {
 				{
 					if (smokeEffect.GetComponent<ParticleSystem>().isPlaying)
 					{
-						//smokeEffect.GetComponent<ParticleSystem>().Stop();
+						smokeEffect.GetComponent<ParticleSystem>().Stop();
 					}
 
 				}
