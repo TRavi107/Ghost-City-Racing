@@ -36,7 +36,13 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         {
             for (int i = 0; i < RaceManager.instance.checkPointsTransform.childCount; i++)
             {
-                checkPoints.Add(new CheckPoint(i, false, 0));
+                if (i < 17)
+                {
+                    checkPoints.Add(new CheckPoint(i, true, 0));
+                }
+                else
+                    checkPoints.Add(new CheckPoint(i, false, 0));
+
             }
         }
         skidmarksController = RaceManager.instance.skidMarkController;
@@ -126,7 +132,6 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             }
             else
             {
-                print(i);
                 break;
             }
 
