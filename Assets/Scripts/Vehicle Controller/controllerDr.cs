@@ -21,7 +21,6 @@ public class controllerDr : MonoBehaviourPunCallbacks
     [Header("TO be changed Later")]
     public float maxVelocity;
     public AudioSource audiosource;
-    public float DriftSoundDuration;
     //other classes ->
     //public GameManager manager;
 
@@ -31,6 +30,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
     [Header("Variables")]
     public float handBrakeFrictionMultiplier = 2f;
     public float totalPower;
+    public float brakeForce;
     public float maxRPM , minRPM;
     public float KPH;
     public float wheelsRPM;
@@ -48,7 +48,8 @@ public class controllerDr : MonoBehaviourPunCallbacks
     private Rigidbody rigidbody;
     public float vertical;
     public float horizontal;
-    private bool handbrake;
+    public float brake;
+    public bool handbrake;
 
     //car Shop Values
     public int carPrice ;
@@ -64,7 +65,6 @@ public class controllerDr : MonoBehaviourPunCallbacks
     [Header("DEBUG")]
     public float[] slip = new float[4];
 
-    private float lastDriftSoundPlayed=0;
 
     private void Awake() {
 
@@ -100,6 +100,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
        // if(SceneManager.GetActiveScene().name == "awakeScene")return;
         vertical = Input.GetAxis("Vertical");
         horizontal = Input.GetAxis("Horizontal");
+        brake = Input.GetAxis("Jump");
         handbrake = Input.GetKey(KeyCode.LeftShift);
         addDownForce();
         animateWheels();
@@ -109,7 +110,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
         adjustTraction();
         audiosource.pitch = (rigidbody.velocity.magnitude / maxVelocity)*2.8f;
     }
-    
+
     private void calculateEnginePower(){
         wheelRPM();
 
@@ -180,13 +181,17 @@ public class controllerDr : MonoBehaviourPunCallbacks
 
     private void moveVehicle(){
 
-      //  if(IM.boosting){
-   			//rigidbody.AddForce(transform.forward * 15000);
+        //  if(IM.boosting){
+        //rigidbody.AddForce(transform.forward * 15000);
 
-      //      //totalPower += 2000f;
-      //  }
+        //      //totalPower += 2000f;
+        //  }
+        for (int i = 0; i < wheels.Length; i++)
+        {
+            wheels[i].brakeTorque = brakeForce*brake;
+        }
 
-        if(drive == driveType.allWheelDrive){
+        if (drive == driveType.allWheelDrive){
             for (int i = 0; i < wheels.Length; i++){
                 wheels[i].motorTorque = totalPower / 4;
             }
@@ -253,7 +258,8 @@ public class controllerDr : MonoBehaviourPunCallbacks
             //tine it takes to go from normal drive to drift 
         float driftSmothFactor = .7f * Time.deltaTime;
 
-		if(handbrake){
+        if (handbrake )
+        {
             sidewaysFriction = wheels[0].sidewaysFriction;
             forwardFriction = wheels[0].forwardFriction;
 
@@ -273,11 +279,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
                 wheels [i].forwardFriction = forwardFriction;
             }
             //rigidbody.AddForce(transform.forward * (KPH / 400) * 40000 );
-            if (lastDriftSoundPlayed + DriftSoundDuration < Time.time)
-            {
-                SoundManager.PlaySound(Sound.skid, transform.position);
-                lastDriftSoundPlayed = Time.time;
-            }
+            
 		}
             //executed when handbrake is being held
         else{

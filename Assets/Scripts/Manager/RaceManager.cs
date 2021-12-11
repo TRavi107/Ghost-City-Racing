@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-[System.Serializable]
 public class CheckPoint
 {
     public int checkPointIndex;
@@ -33,9 +32,11 @@ public class Participant
 public class RaceManager : MonoBehaviourPun
 {
     public TMP_Text timerText;
+    public TMP_Text messageText;
     public GameObject racerInfoPanel;
     public GameObject racerInfoPrefab;
     public Transform checkPointsTransform;
+    public Skidmarks skidMarkController;
 
     public List<Transform> spawnPoints;
 
@@ -46,9 +47,10 @@ public class RaceManager : MonoBehaviourPun
     public float counterTime;
     public float racerInfopanelActivationDuration = 3f;
     public float lastAcivated;
+    public float startedTime;
+
 
     private float timer;
-    private float startedTime;
     private float totalRaceDistance;
 
     private bool startTimer = false;
@@ -85,7 +87,9 @@ public class RaceManager : MonoBehaviourPun
                 distance += Vector3.Distance(checkPointsTransform.GetChild(i).localPosition, checkPointsTransform.GetChild(i+1).localPosition);
 
         }
+        me.GetComponent<controllerDr>().enabled = false;
         racerInfoPanel.gameObject.SetActive(true);
+        HideMessage();
     }
 
     // Update is called once per frame
@@ -100,24 +104,21 @@ public class RaceManager : MonoBehaviourPun
                 lastAcivated = 3;
                 //activateRacerInfo(0,false);
             }
-            if(timer >3 && timer < 4)
+            if(timer >2 && timer < 3)
             {
                 timerText.text = "Ready";
             }
-            else if(timer > 2 && timer < 3)
+            else if(timer > 1 && timer < 2)
             {
                 timerText.text = "To";
             }
-            else if(timer > 1 && timer < 2)
+            else if(timer > 0 && timer < 1)
             {
                 timerText.text = "Race";
             }
-            else if(timer > 0 && timer < 1)
-            {
-                timerText.text = "Goo....";
-            }
             else if (timer <= 0)
             {
+                timerText.text = "Go...";
                 photonView.RPC("RPC_StartRace", RpcTarget.All);
             }
         }
@@ -155,13 +156,24 @@ public class RaceManager : MonoBehaviourPun
     {
         startRace = true;
         startTimer = false;
-        timerText.gameObject.SetActive(false);
         me.GetComponent<controllerDr>().enabled = true;
+        me.GetComponent<AudioSource>().volume = 1;
         racerInfoPanel.SetActive(false);
         startedTime = Time.time;
+        timerText.gameObject.SetActive(false);
     }
 
-    
+    public void ShowMessage(string message)
+    {
+        messageText.gameObject.SetActive(true);
+        messageText.text = message;
+    }
+
+    public void HideMessage()
+    {
+        messageText.gameObject.SetActive(false);
+
+    }
 
     public void PlayerEnter(playerManager player,int wayPoint)
     {
@@ -190,7 +202,6 @@ public class RaceManager : MonoBehaviourPun
                         break;
                     
                 }
-                print(item.distanceTravelled);
             }
         }
 

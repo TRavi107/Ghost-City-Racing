@@ -152,9 +152,9 @@ MonoBehaviour:
   gearChange: 0
   maxVelocity: 150
   audiosource: {fileID: 2060787699709006252}
-  DriftSoundDuration: 1
   handBrakeFrictionMultiplier: 4
   totalPower: 0
+  brakeForce: 500
   maxRPM: 4000
   minRPM: 2000
   KPH: 0
@@ -220,6 +220,8 @@ MonoBehaviour:
   centerOfMass: {fileID: 1944122961}
   vertical: 0
   horizontal: 0
+  brake: 0
+  handbrake: 0
   carPrice: 0
   carName: 
   upgradeLevel: 0
@@ -332,43 +334,6 @@ MonoBehaviour:
   controler: {fileID: 6026452485704676088}
   nickName: 
   miniMapVision: {fileID: 7861894160891597243}
-  checkPoints:
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
-  - checkPointIndex: 0
-    Iscompleted: 0
-    completedTime: 0
 --- !u!82 &2060787699709006252
 AudioSource:
   m_ObjectHideFlags: 0
@@ -381,7 +346,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 798246c5078bc7c44974f29fe56d1758, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1095,6 +1060,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7193159486493819274}
   - component: {fileID: 7193159486493819277}
+  - component: {fileID: 7514376015145006841}
   m_Layer: 0
   m_Name: FrontLeftWheel
   m_TagString: Untagged
@@ -1146,6 +1112,23 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
   m_Enabled: 1
+--- !u!114 &7514376015145006841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193159486493819275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702f0e2956df74777866075e079999ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 7193159486902237057}
+  skidmarksController: {fileID: 0}
+  wheelCollider: {fileID: 0}
+  controller: {fileID: 6026452485704676088}
+  DriftSoundDuration: 2
 --- !u!1 &7193159486638201160
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,6 +1139,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7193159486638201163}
   - component: {fileID: 7193159486638201162}
+  - component: {fileID: 1498203214995337319}
   m_Layer: 0
   m_Name: FrontRightWheel
   m_TagString: Untagged
@@ -1207,6 +1191,23 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
   m_Enabled: 1
+--- !u!114 &1498203214995337319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193159486638201160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702f0e2956df74777866075e079999ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 7193159486902237057}
+  skidmarksController: {fileID: 0}
+  wheelCollider: {fileID: 0}
+  controller: {fileID: 6026452485704676088}
+  DriftSoundDuration: 2
 --- !u!1 &7193159486804904620
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,6 +1252,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7193159487589385978}
   - component: {fileID: 7193159487589385981}
+  - component: {fileID: 123546237372089084}
   m_Layer: 0
   m_Name: RearRightWheel
   m_TagString: Untagged
@@ -1302,6 +1304,23 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
   m_Enabled: 1
+--- !u!114 &123546237372089084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193159487589385979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702f0e2956df74777866075e079999ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 7193159486902237057}
+  skidmarksController: {fileID: 0}
+  wheelCollider: {fileID: 0}
+  controller: {fileID: 6026452485704676088}
+  DriftSoundDuration: 2
 --- !u!1 &7193159487667200988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1312,6 +1331,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7193159487667200991}
   - component: {fileID: 7193159487667200990}
+  - component: {fileID: 8407947422768230128}
   m_Layer: 0
   m_Name: RearLeftWheel
   m_TagString: Untagged
@@ -1363,6 +1383,23 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
   m_Enabled: 1
+--- !u!114 &8407947422768230128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193159487667200988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702f0e2956df74777866075e079999ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 7193159486902237057}
+  skidmarksController: {fileID: 0}
+  wheelCollider: {fileID: 0}
+  controller: {fileID: 6026452485704676088}
+  DriftSoundDuration: 2
 --- !u!1 &7368191853014758744
 GameObject:
   m_ObjectHideFlags: 0

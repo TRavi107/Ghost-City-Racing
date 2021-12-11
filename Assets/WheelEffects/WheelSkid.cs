@@ -16,10 +16,13 @@ public class WheelSkid : MonoBehaviour {
 
 	// END INSPECTOR SETTINGS
 
-	WheelCollider wheelCollider;
+	public WheelCollider wheelCollider;
+	public controllerDr controller;
+	private float lastDriftSoundPlayed = 0;
+	public float DriftSoundDuration;
 	WheelHit wheelHitInfo;
 
-	const float SKID_FX_SPEED = 0.5f; // Min side slip speed in m/s to start showing a skid
+	const float SKID_FX_SPEED = 2f; // Min side slip speed in m/s to start showing a skid
 	const float MAX_SKID_INTENSITY = 20.0f; // m/s where skid opacity is at full intensity
 	const float WHEEL_SLIP_MULTIPLIER = 10.0f; // For wheelspin. Adjust how much skids show
 	int lastSkid = -1; // Array index for the skidmarks controller. Index of last skidmark piece this wheel used
@@ -28,8 +31,9 @@ public class WheelSkid : MonoBehaviour {
 	// #### UNITY INTERNAL METHODS ####
 
 	protected void Awake() {
-		wheelCollider = GetComponent<WheelCollider>();
 		lastFixedUpdateTime = Time.time;
+		wheelCollider = GetComponent<WheelCollider>();
+		skidmarksController = RaceManager.instance.skidMarkController;
 	}
 
 	protected void FixedUpdate() {
@@ -37,6 +41,7 @@ public class WheelSkid : MonoBehaviour {
 	}
 
 	protected void LateUpdate() {
+	
 		if (wheelCollider.GetGroundHit(out wheelHitInfo))
 		{
 			// Check sideways speed
@@ -56,23 +61,34 @@ public class WheelSkid : MonoBehaviour {
 			// so this fades out the wheelspin-based skid as speed increases to make it look almost OK
 			wheelSpin = Mathf.Max(0, wheelSpin * (10 - carForwardVel));
 
-			skidTotal += wheelSpin;
+			//skidTotal += wheelSpin;
 
+			print(( skidTotal));
 			// Skid if we should
-			if (skidTotal >= SKID_FX_SPEED) {
-				float intensity = Mathf.Clamp01(skidTotal / MAX_SKID_INTENSITY);
-                // Account for further movement since the last FixedUpdate
-                Vector3 skidPoint = wheelCollider.transform.position - wheelCollider.transform.up * wheelCollider.radius;//wheelHitInfo.point;// + (rb.velocity * (Time.time - lastFixedUpdateTime));
+			if (skidTotal>SKID_FX_SPEED)
+			{
 
-                lastSkid = skidmarksController.AddSkidMark(skidPoint, wheelHitInfo.normal, intensity, lastSkid);
-			}
-			else {
+				float intensity = Mathf.Clamp01(skidTotal / 2);
+				// Account for further movement since the last FixedUpdate
+				Vector3 skidPoint = wheelCollider.transform.position - wheelCollider.transform.up * wheelCollider.radius;//wheelHitInfo.point;// + (rb.velocity * (Time.time - lastFixedUpdateTime));
+
+				lastSkid = skidmarksController.AddSkidMark(skidPoint, wheelHitInfo.normal, intensity, lastSkid);
+                if (lastDriftSoundPlayed + DriftSoundDuration < Time.time)
+                {
+                    SoundManager.PlaySound(Sound.skid, transform.position);
+                    lastDriftSoundPlayed = Time.time;
+                }
+            }
+			else
+			{
 				lastSkid = -1;
 			}
 		}
-		else {
+		else
+		{
 			lastSkid = -1;
 		}
+		
 	}
 
 	// #### PUBLIC METHODS ####

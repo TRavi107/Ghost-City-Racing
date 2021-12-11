@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,30 +21,17 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
     public List<CheckPoint> checkPoints =new List<CheckPoint>() ;
 
-
-    public void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "checkPoints")
-        {
-            for (int i = 0; i < checkPoints.Count; i++)
-            {
-                if(checkPoints[i].checkPointIndex== other.gameObject.transform.GetSiblingIndex())
-                {
-                    if(checkPoints[i].Iscompleted != true)
-                    {
-                        RaceManager.instance.PlayerEnter(this, i);
-                    }
-                }
-            }
-        }
-    }
+    private bool ghostMode=false;
 
     // Start is called before the first frame update
     void Awake()
     {
-        for (int i = 0; i < RaceManager.instance.checkPointsTransform.childCount; i++)
+        if (RaceManager.instance != null)
         {
-            checkPoints.Add(new CheckPoint(i, false, 0));
+            for (int i = 0; i < RaceManager.instance.checkPointsTransform.childCount; i++)
+            {
+                checkPoints.Add(new CheckPoint(i, false, 0));
+            }
         }
         if (!photonView.IsMine)
         {
@@ -54,15 +42,16 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         else
         {
+
             if (instance == null)
             {
                 instance = this;
             }
-            
             //Vector3 pos = new Vector3(Random.Range(11, 70), 0, 44);
             //player = PhotonNetwork.Instantiate("Free_Racing_Car_BlueNetwork", pos, Quaternion.identity);
             Transform lookAt = gameObject.transform.Find("lookAt");
             controler = GetComponent<controllerDr>();
+
             _camera = FindObjectOfType<Camera>();
             _camera.GetComponent<cameraFollow>().player = this.gameObject;
             _camera.GetComponent<cameraFollow>().lookAt = lookAt;
@@ -76,7 +65,97 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
         }
     }
-  
+
+    float ghostTimer = 0;
+    // Update is called once per frame
+    void Update()
+    {
+
+        if (photonView.IsMine)
+        {
+            if (!ghostMode)
+            {
+                checkAFK();
+            }
+            else
+            {
+                if (ghostTimer > 10)
+                {
+                    ghostTimer = 0;
+                    ghostMode = false;
+                }
+                else
+                    ghostTimer += Time.deltaTime;
+            }
+            return;
+        }
+        var lagDistance = remotePosition - transform.position;
+        if (lagDistance.magnitude > 5)
+        {
+            transform.position = remotePosition;
+        }
+        else
+        {
+            transform.position = Vector3.MoveTowards(transform.position, remotePosition,GetComponent<Rigidbody>().velocity.magnitude);
+            transform.rotation = Quaternion.Lerp(transform.rotation, remoterotation, 0.2f);
+        }
+        GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
+
+    }
+
+    public void ResetToLastCheckPoint()
+    {
+        int lastCheckPoint = 0;
+        ghostMode = true;
+        for (int i = 0; i < checkPoints.Count; i++)
+        {
+            if (checkPoints[i].Iscompleted)
+            {
+                lastCheckPoint = i;
+            }
+            else
+            {
+                print(i);
+                break;
+            }
+
+        }
+        this.transform.position = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).position;
+                                
+        this.transform.rotation = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+
+    private void checkAFK()
+    {
+        float lastCheckPointTime = 0;
+        int check = 0;
+        for (int i = 0; i < checkPoints.Count; i++)
+        {
+            if (checkPoints[i].Iscompleted)
+            {
+                lastCheckPointTime = checkPoints[i].completedTime;
+                check = i;
+            }
+            else
+            {
+                break;
+            }
+
+        }
+        if (lastCheckPointTime != 0)
+        {
+            if ((Time.time- lastCheckPointTime) > 2 && (Time.time - lastCheckPointTime) < 7)
+            {
+                RaceManager.instance.ShowMessage("warning out of track return to track");
+            }
+            else if((Time.time - lastCheckPointTime) > 7)
+            {
+                ResetToLastCheckPoint();
+                RaceManager.instance.HideMessage();
+            }
+        }
+    }
 
     [PunRPC]
     private void RPC_SetMyNickName(string _nickname)
@@ -119,28 +198,6 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         miniMapVision.color = tempColor;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (photonView.IsMine)
-        {
-            return;
-        }
-        var lagDistance = remotePosition - transform.position;
-        if (lagDistance.magnitude > 5)
-        {
-            transform.position = remotePosition;
-            lagDistance = Vector3.zero;
-        }
-        else
-        {
-            transform.position = Vector3.Lerp(transform.position, remotePosition,0.2f);
-            transform.rotation = Quaternion.Lerp(transform.rotation, remoterotation, 0.2f);
-        }
-        GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
-
-    }
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -152,6 +209,24 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         {
             remotePosition = (Vector3)stream.ReceiveNext();
             remoterotation = (Quaternion)stream.ReceiveNext();
+        }
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "checkPoints")
+        {
+            for (int i = 0; i < checkPoints.Count; i++)
+            {
+                if (checkPoints[i].checkPointIndex == other.gameObject.transform.GetSiblingIndex())
+                {
+                    if (checkPoints[i].Iscompleted != true)
+                    {
+                        RaceManager.instance.PlayerEnter(this, i);
+                        print(i);
+                    }
+                }
+            }
         }
     }
 
