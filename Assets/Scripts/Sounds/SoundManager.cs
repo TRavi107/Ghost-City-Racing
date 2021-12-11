@@ -14,7 +14,7 @@ public static class SoundManager
     private static GameObject gearSoundSource;
 
 
-    public static void PlaySound(Sound sound,Vector3 pos)
+    public static void PlaySound(Sound sound,Transform pos)
     {
         switch (sound)
         {
@@ -29,9 +29,12 @@ public static class SoundManager
 
                 }
                 AudioSource audiosource = driftSoundSource.GetComponent<AudioSource>();
-                driftSoundSource.transform.position = pos;
-                audiosource.volume = 0.2f;
+                driftSoundSource.transform.position = pos.transform.position;
+                driftSoundSource.transform.parent = pos;
                 audiosource.PlayOneShot(GameAssets.instance.GetSoundClip(Sound.skid));
+                audiosource.volume = 0.2f;
+                audiosource.spatialBlend = 1;
+                audiosource.maxDistance = 100;
                 break;
 
             case Sound.gearchange:
@@ -42,9 +45,12 @@ public static class SoundManager
 
                 }
                 AudioSource G_audiosource = gearSoundSource.GetComponent<AudioSource>();
-                gearSoundSource.transform.position = pos;
-                G_audiosource.volume = 0.5f;
+                gearSoundSource.transform.position = pos.transform.position;
+                gearSoundSource.transform.parent = pos;
                 G_audiosource.PlayOneShot(GameAssets.instance.GetSoundClip(Sound.gearchange));
+                G_audiosource.volume = 0.5f;
+                G_audiosource.spatialBlend = 1;
+                G_audiosource.maxDistance = 100;
                 break;
             default:
                 break;

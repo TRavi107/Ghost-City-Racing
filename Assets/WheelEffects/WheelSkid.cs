@@ -77,7 +77,7 @@ public class WheelSkid : MonoBehaviour {
                 lastSkid = skidmarksController.AddSkidMark(skidPoint, wheelHitInfo.normal, intensity, lastSkid);
                 if (lastDriftSoundPlayed + DriftSoundDuration < Time.time)
                 {
-                    SoundManager.PlaySound(Sound.skid, transform.position);
+                    SoundManager.PlaySound(Sound.skid, transform);
                     lastDriftSoundPlayed = Time.time;
                 }
                 if (smokeEffect == null)

@@ -137,10 +137,10 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
         }
         this.transform.position = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).position;
-                                
-        this.transform.rotation =Quaternion.Euler (RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.x,
-            RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.y +180,
-            RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.z);
+        this.transform.rotation = Quaternion.identity;
+        this.transform.rotation =Quaternion.Euler(RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.x,
+            RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.y+180,
+            RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.z);
         GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
