@@ -12,10 +12,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed50bc81c60fa1942be52e9bad46f51a, type: 3}
   m_Name: BlueCarProperty
   m_EditorClassIdentifier: 
-  Xd: 3.42
-  n: 0.7
-  Rw: 0.34
-  Cd: 0.4257
-  Crr: 12.771
-  A: 2.2
-  rho: 1.29
+  carPrice: 0
+  carName: Blue Car
+  handBrakeFrictionMultiplier: 2
+  maxRPM: 4500
+  minRPM: 2500
+  maxVelocity: 150
+  gears:
+  - 2
+  - 1.5
+  - 1
+  - 0.7
+  gearChangeSpeed:
+  - 60
+  - 80
+  - 100
+  - 120
+  brakeForce: 500
+  enginePower:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1000
+      value: 50
+      inSlope: 0.27709687
+      outSlope: 0.27709687
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.09761914
+    - serializedVersion: 3
+      time: 4500
+      value: 750
+      inSlope: 0.122249335
+      outSlope: 0.122249335
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.283334
+    - serializedVersion: 3
+      time: 5500
+      value: 50
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

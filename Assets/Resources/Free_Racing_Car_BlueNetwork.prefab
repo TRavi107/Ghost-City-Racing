@@ -152,61 +152,13 @@ MonoBehaviour:
   gearChange: 0
   maxVelocity: 150
   audiosource: {fileID: 2060787699709006252}
-  handBrakeFrictionMultiplier: 4
+  carConstant: {fileID: 11400000, guid: c767a1035af344e45af5f8f76066375b, type: 2}
   totalPower: 0
-  brakeForce: 500
-  maxRPM: 4000
-  minRPM: 2000
   KPH: 0
   wheelsRPM: 0
   engineRPM: 0
-  gears:
-  - 2.5
-  - 2
-  - 1.5
-  - 1
-  - 0.5
-  gearChangeSpeed:
-  - 60
-  - 90
-  - 120
-  - 150
-  - 180
   gearNum: 0
   reverse: 0
-  enginePower:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.19744627
-      outSlope: 0.19744627
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.08864276
-    - serializedVersion: 3
-      time: 3133.6768
-      value: 480
-      inSlope: 0.12256801
-      outSlope: 0.12256801
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.11229671
-    - serializedVersion: 3
-      time: 6000
-      value: 100
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   wheels:
   - {fileID: 7193159486493819277}
   - {fileID: 7193159486638201162}
@@ -222,14 +174,7 @@ MonoBehaviour:
   horizontal: 0
   brake: 0
   handbrake: 0
-  carPrice: 0
-  carName: 
   upgradeLevel: 0
-  slip:
-  - 0
-  - 0
-  - 0
-  - 0
 --- !u!114 &3068448824370704410
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -49,7 +49,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
         if (!photonView.IsMine)
         {
-            maxVelocity = GetComponent<controllerDr>().maxVelocity;
+            maxVelocity = GetComponent<controllerDr>().carConstant.maxVelocity;
             //PhotonNetwork.Instantiate("Free_Racing_Car_BlueNetwork", new Vector3(5, 0, 0), Quaternion.identity);
             Destroy(FindObjectOfType<Camera>().gameObject);
             Destroy(GetComponent<controllerDr>());
@@ -260,7 +260,6 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        CheckPoint[] waypoint = new CheckPoint[12];
         RaceManager.instance.raceParticipants.Add(new Participant(this));
     }
 }

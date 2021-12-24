@@ -19,27 +19,15 @@ public class controllerDr : MonoBehaviourPunCallbacks
     [SerializeField]private gearBox gearChange;
 
     [Header("TO be changed Later")]
-    public float maxVelocity;
     public AudioSource audiosource;
-    //other classes ->
-    //public GameManager manager;
+    public CarConstants carConstant;
 
-    //[Header("lighgts")]
-    //public GameObject Lights;
-
-    [Header("Variables")]
-    public float handBrakeFrictionMultiplier = 2f;
     public float totalPower;
-    public float brakeForce;
-    public float maxRPM , minRPM;
     public float KPH;
     public float wheelsRPM;
     public float engineRPM;
-    public float[] gears;
-    public float[] gearChangeSpeed;
     public int gearNum = 0;
     public bool reverse = false;
-    public AnimationCurve enginePower;
 
     //private inputManager IM;
     public WheelCollider[] wheels;
@@ -51,24 +39,17 @@ public class controllerDr : MonoBehaviourPunCallbacks
     public float brake;
     public bool handbrake;
 
-    //car Shop Values
-    public int carPrice ;
-    public string carName;
     public int upgradeLevel = 0 ; //added upgrade level
-    
+    public bool AIControlled;
 
     //hard coded values -
 
 	private WheelFrictionCurve  forwardFriction,sidewaysFriction;
-    private float thrust = -20000 , radius = 6, brakPower = 50000 , DownForceValue = 100f,smoothTime=0.09f , throttle ;// added throttle value
-
-    [Header("DEBUG")]
-    public float[] slip = new float[4];
-
+    private float radius = 6, DownForceValue = 100f ,smoothTime=0.09f , throttle ;// added throttle value
 
     private void Awake() {
 
-        upgradeLevel = PlayerPrefs.GetInt(carName + "upgrade");
+        upgradeLevel = PlayerPrefs.GetInt(carConstant.carName + "upgrade");
 
         //check for upgrade -
         switch (upgradeLevel){
@@ -82,9 +63,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
             break;
         }
 
-
-        if(SceneManager.GetActiveScene().name == "awakeScene")return;
-
+        AIControlled = false;
         StartCoroutine(timedLoop());
 
     }
@@ -97,27 +76,30 @@ public class controllerDr : MonoBehaviourPunCallbacks
 
     private void FixedUpdate() {
 
-       // if(SceneManager.GetActiveScene().name == "awakeScene")return;
-        vertical = Input.GetAxis("Vertical");
-        horizontal = Input.GetAxis("Horizontal");
-        brake = Input.GetAxis("Jump");
-        handbrake = Input.GetKey(KeyCode.LeftShift);
+        // if(SceneManager.GetActiveScene().name == "awakeScene")return;
+        if (!AIControlled)
+        {
+            vertical = Input.GetAxis("Vertical");
+            horizontal = Input.GetAxis("Horizontal");
+            brake = Input.GetAxis("Jump");
+            handbrake = Input.GetKey(KeyCode.LeftShift);
+        }
         addDownForce();
         animateWheels();
         steerVehicle();
         calculateEnginePower();
         shifter();
         adjustTraction();
-        audiosource.pitch = (rigidbody.velocity.magnitude / maxVelocity)*2.8f;
+        audiosource.pitch = (rigidbody.velocity.magnitude / carConstant.maxVelocity)*2.8f;
     }
 
     private void calculateEnginePower(){
         wheelRPM();
 
-        totalPower = enginePower.Evaluate(engineRPM) * (gears[gearNum]) * (vertical + throttle);//add upgraded throttle
+        totalPower = carConstant.enginePower.Evaluate(engineRPM) * (carConstant.gears[gearNum]) * (vertical + throttle);//add upgraded throttle
         float velocity  = 0.0f;
-        engineRPM = Mathf.SmoothDamp(engineRPM,(1000+Mathf.Abs(wheelsRPM) * 3.6f * (gears[gearNum])), ref velocity , smoothTime);
-        if(engineRPM > maxRPM + 500) engineRPM = maxRPM +  500 ;
+        engineRPM = Mathf.SmoothDamp(engineRPM,(1000+Mathf.Abs(wheelsRPM) * 3.6f * (carConstant.gears[gearNum])), ref velocity , smoothTime);
+        if(engineRPM > carConstant.maxRPM + 500) engineRPM = carConstant.maxRPM +  500 ;
         moveVehicle();
 
     }
@@ -143,7 +125,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
     }
 
     private bool checkGears(){
-        if(KPH >= gearChangeSpeed[gearNum] ) return true;
+        if(KPH >= carConstant.gearChangeSpeed[gearNum] ) return true;
         else return false;
     }
 
@@ -152,13 +134,13 @@ public class controllerDr : MonoBehaviourPunCallbacks
         if(!isGrounded())return;
             //automatic
         if(gearChange == gearBox.automatic){
-            if(engineRPM > maxRPM && gearNum < gears.Length-1 && !reverse && checkGears() ){
+            if(engineRPM > carConstant.maxRPM && gearNum < carConstant.gears.Length-1 && !reverse && checkGears() ){
                 gearNum ++;
                 SoundManager.PlaySound(Sound.gearchange, transform);
                 //manager.changeGear();
                 return;
             }
-            if (engineRPM < minRPM && gearNum > 0)
+            if (engineRPM < carConstant.minRPM && gearNum > 0)
             {
                 gearNum--;
                 SoundManager.PlaySound(Sound.gearchange, transform);
@@ -192,7 +174,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
         //  }
         for (int i = 0; i < wheels.Length; i++)
         {
-            wheels[i].brakeTorque = brakeForce*brake;
+            wheels[i].brakeTorque = carConstant.brakeForce*brake;
         }
 
         if (drive == driveType.allWheelDrive){
@@ -269,7 +251,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
 
             float velocity = 0;
             sidewaysFriction.extremumValue =sidewaysFriction.asymptoteValue = forwardFriction.extremumValue = forwardFriction.asymptoteValue =
-                Mathf.SmoothDamp(forwardFriction.asymptoteValue,driftFactor * handBrakeFrictionMultiplier,ref velocity ,driftSmothFactor );
+                Mathf.SmoothDamp(forwardFriction.asymptoteValue,driftFactor * carConstant.handBrakeFrictionMultiplier,ref velocity ,driftSmothFactor );
 
             for (int i = 0; i < 4; i++) {
                 wheels [i].sidewaysFriction = sidewaysFriction;
@@ -292,7 +274,7 @@ public class controllerDr : MonoBehaviourPunCallbacks
 			sidewaysFriction = wheels[0].sidewaysFriction;
 
 			forwardFriction.extremumValue = forwardFriction.asymptoteValue = sidewaysFriction.extremumValue = sidewaysFriction.asymptoteValue = 
-                ((KPH * handBrakeFrictionMultiplier) / 300) + 1;
+                ((KPH * carConstant.handBrakeFrictionMultiplier) / 300) + 1;
 
 			for (int i = 0; i < 4; i++) {
 				wheels [i].forwardFriction = forwardFriction;
