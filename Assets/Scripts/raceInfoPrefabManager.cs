@@ -8,7 +8,7 @@ public class raceInfoPrefabManager : MonoBehaviour
     public TMP_Text time;
     public float raceTime;
 
-    public void setInfo(string name,float _time,Color color,bool showTimer)
+    public void setInfo(int pos,string name,float _time,Color color,bool showTimer)
     {
         racerName.text = name;
         time.text = _time.ToString("000");

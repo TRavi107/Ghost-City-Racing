@@ -32,6 +32,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
     // Start is called before the first frame update
     void Awake()
     {
+        GetComponent<AIController>().enabled = false;
         if (RaceManager.instance != null)
         {
             for (int i = 0; i < RaceManager.instance.checkPointsTransform.childCount; i++)
@@ -104,6 +105,10 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
                         ghostTimer += Time.deltaTime;
                 }
             }
+            else
+            {
+                showLeaderBoard();
+            }
             return;
         }
         var lagDistance = remotePosition - transform.position;
@@ -118,6 +123,41 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
 
+    }
+
+    private void showLeaderBoard()
+    {
+        
+        if(RaceManager.instance != null)
+        {
+            if (RaceManager.instance.gameOverPanel.gameObject.activeSelf)
+            {
+                return;
+            }
+            RaceManager.instance.gameOverPanel.SetActive(true);
+            for (int i = 0; i < RaceManager.instance.raceParticipants.Count; i++)
+            {
+                playerManager manager = RaceManager.instance.raceParticipants[i].playerManager;
+                GameObject tempracerInfoPrefab = Instantiate(RaceManager.instance.racerInfoPrefab, RaceManager.instance.gameOverPanel.transform);
+                if (RaceManager.instance.raceParticipants.Count == 1)
+                    tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName,
+                                                        Mathf.Abs(RaceManager.instance.raceParticipants[i].distanceTravelled),
+                                                        manager.myColor, true);
+                else if (i == 0)
+                    tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName,
+                                                        Mathf.Abs(RaceManager.instance.raceParticipants[i].distanceTravelled - RaceManager.instance.raceParticipants[i + 1].distanceTravelled),
+                                                        manager.myColor, true);
+                else
+                    tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName,
+                                                        Mathf.Abs(RaceManager.instance.raceParticipants[i].distanceTravelled - RaceManager.instance.raceParticipants[i - 1].distanceTravelled),
+                                                        manager.myColor, true);
+
+                if (RaceManager.instance.raceParticipants[i].playerManager.nickName == nickName)
+                {
+                    break;
+                }
+            }
+        }
     }
 
     public void ResetToLastCheckPoint()

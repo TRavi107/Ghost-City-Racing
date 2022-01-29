@@ -29,18 +29,24 @@ public class Participant
         distanceTravelled = 0;
     }
 }
+
+
+
 public class RaceManager : MonoBehaviourPun
 {
     public TMP_Text timerText;
     public TMP_Text messageText;
     public GameObject racerInfoPanel;
     public GameObject racerInfoPrefab;
+    public GameObject gameOverPanel;
     public Transform checkPointsTransform;
     public Skidmarks skidMarkController;
 
     public List<Transform> spawnPoints;
 
     public List<Participant> raceParticipants =new List<Participant>();
+    public List<Transform> AIcheckpoints = new List<Transform>();
+
 
     public static RaceManager instance;
 
@@ -146,7 +152,6 @@ public class RaceManager : MonoBehaviourPun
     {
         startTimer = true;
         racerInfoPanel.SetActive(true);
-        
     }
 
     
@@ -196,8 +201,8 @@ public class RaceManager : MonoBehaviourPun
                     {
                         ShowMessage("You are " + (raceParticipants.IndexOf(item)+1).ToString());
                         me.raceIsOver = true;
-                        me.GetComponent<controllerDr>().enabled =false;
-                        me.GetComponent<Rigidbody>().drag = 2;
+                        //me.GetComponent<controllerDr>().enabled =false;
+                        me.GetComponent<AIController>().enabled = true;
                         return;
                     }
                 }
@@ -274,15 +279,15 @@ public class RaceManager : MonoBehaviourPun
             playerManager manager = raceParticipants[i].playerManager;
             GameObject tempracerInfoPrefab = Instantiate(racerInfoPrefab, racerInfoPanel.transform);
             if(raceParticipants.Count==1)
-                tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(manager.nickName, 
+                tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName, 
                                                     Mathf.Abs(raceParticipants[i].distanceTravelled), 
                                                     manager.myColor, showTimer);
             else if (i==0)
-                tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(manager.nickName,
+                tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName,
                                                     Mathf.Abs (raceParticipants[i].distanceTravelled - raceParticipants[i+1].distanceTravelled), 
                                                     manager.myColor, showTimer);
             else
-                tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(manager.nickName,
+                tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName,
                                                     Mathf.Abs (raceParticipants[i].distanceTravelled - raceParticipants[i -1].distanceTravelled), 
                                                     manager.myColor, showTimer);
 

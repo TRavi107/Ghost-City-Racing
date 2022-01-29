@@ -80,6 +80,7 @@ GameObject:
   - component: {fileID: 2141399811246135707}
   - component: {fileID: -2954201171294544795}
   - component: {fileID: 2060787699709006252}
+  - component: {fileID: 473943431}
   m_Layer: 0
   m_Name: Free_Racing_Car_BlueNetwork
   m_TagString: Player
@@ -150,7 +151,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drive: 1
   gearChange: 0
-  maxVelocity: 150
   audiosource: {fileID: 2060787699709006252}
   carConstant: {fileID: 11400000, guid: c767a1035af344e45af5f8f76066375b, type: 2}
   totalPower: 0
@@ -175,6 +175,7 @@ MonoBehaviour:
   brake: 0
   handbrake: 0
   upgradeLevel: 0
+  AIControlled: 0
 --- !u!114 &3068448824370704410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,6 +379,41 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &473943431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3490710730049604177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 633934a54f488f54598e9f02d4740c4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  controller: {fileID: 6026452485704676088}
+  currentMode: 0
 --- !u!1 &3490710730155038601
 GameObject:
   m_ObjectHideFlags: 0

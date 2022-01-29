@@ -9,10 +9,10 @@ public enum mode
     fallBack,
 }
 
-public class policeAI : MonoBehaviour
+public class AIController : MonoBehaviour
 {
     //Public Properties
-    public List<Transform> checkPoints =new List<Transform>();
+    public List<Transform> checkPoints = new List<Transform>();
     public controllerDr controller;
     public mode currentMode;
     //NonSerielized Fields
@@ -26,15 +26,25 @@ public class policeAI : MonoBehaviour
         controller.AIControlled = true;
         targetCheckPoint = 0;
         currentMode = mode.chase;
-        
+        if (RaceManager.instance != null)
+        {
+            checkPoints = RaceManager.instance.AIcheckpoints;
+            print(RaceManager.instance.AIcheckpoints[0]);
+        }
+
     }
     // Update is called once per frame
     void Update()
     {
         if (currentMode == mode.chase)
         {
-            controller.horizontal = transform.InverseTransformPoint(checkPoints[targetCheckPoint].transform.position).x /
+            float horizontal = transform.InverseTransformPoint(checkPoints[targetCheckPoint].transform.position).x /
                 transform.InverseTransformPoint(checkPoints[targetCheckPoint].transform.position).magnitude;
+            //if (Mathf.Abs(horizontal) > 0.4)
+            //    controller.handbrake = true;
+            //else
+            //    controller.handbrake = false;
+            controller.horizontal = horizontal;
 
             if (Vector3.Distance(transform.position, checkPoints[targetCheckPoint].position) > 5)
             {
@@ -47,7 +57,8 @@ public class policeAI : MonoBehaviour
                 targetCheckPoint++;
             }
 
-            GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / 150) * 2.8f;
         }
+        GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / 150) * 2.8f;
+
     }
 }
