@@ -138,7 +138,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             for (int i = 0; i < RaceManager.instance.raceParticipants.Count; i++)
             {
                 playerManager manager = RaceManager.instance.raceParticipants[i].playerManager;
-                GameObject tempracerInfoPrefab = Instantiate(RaceManager.instance.racerInfoPrefab, RaceManager.instance.gameOverPanel.transform);
+                GameObject tempracerInfoPrefab = Instantiate(RaceManager.instance.racerInfoPrefab, RaceManager.instance.leaderBoardMenu.transform);
                 if (RaceManager.instance.raceParticipants.Count == 1)
                     tempracerInfoPrefab.GetComponent<raceInfoPrefabManager>().setInfo(i+1,manager.nickName,
                                                         Mathf.Abs(RaceManager.instance.raceParticipants[i].distanceTravelled),

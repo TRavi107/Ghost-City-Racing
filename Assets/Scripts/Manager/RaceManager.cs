@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class CheckPoint
@@ -39,6 +40,7 @@ public class RaceManager : MonoBehaviourPun
     public GameObject racerInfoPanel;
     public GameObject racerInfoPrefab;
     public GameObject gameOverPanel;
+    public GameObject leaderBoardMenu;
     public Transform checkPointsTransform;
     public Skidmarks skidMarkController;
 
@@ -244,6 +246,14 @@ public class RaceManager : MonoBehaviourPun
 
     //    return index;
     //}
+
+    public void BackToMainMenu()
+    {
+        NetManager.instance.backToMainMenu = true;
+        PhotonNetwork.LeaveRoom();
+        //PhotonNetwork.Destroy(me.gameObject);
+        SceneManager.LoadScene(1);
+    }
 
 
     private void SortRacerList()

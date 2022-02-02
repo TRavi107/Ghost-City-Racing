@@ -13,11 +13,18 @@ public class NetManager : MonoBehaviourPunCallbacks
 
     public Transform playersContainer;
     public TMP_Text readyBTNText;
+    public GameObject RoomContainer;
+
+    public roomListing roominfoPrefab;
+
+
 
     public List<roomListing> availableRooms;
     public List<playerListing> playersInRoom;
-    public List<playerManager> playersInScene;
+    //public List<playerManager> playersInScene;
     public playerListing playerinfoPrefab;
+
+    public bool backToMainMenu = false;
 
     #region Static Implementation
     public static NetManager instance;
@@ -28,6 +35,9 @@ public class NetManager : MonoBehaviourPunCallbacks
         {
             instance = this;
         }
+
+        SceneManager.LoadScene(1);
+
     }
 
     #endregion
@@ -39,7 +49,13 @@ public class NetManager : MonoBehaviourPunCallbacks
         PhotonNetwork.GameVersion = "0.0.0.1";
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.AutomaticallySyncScene = true;
-        canvasManager.instance.switchCanvas(CanvasType.loadingPanel);
+        //canvasManager.instance.switchCanvas(CanvasType.loadingPanel);
+    }
+
+    void ResetList()
+    {
+        playersInRoom.Clear();
+        availableRooms.Clear();
     }
 
     #region SceneLoading
@@ -58,7 +74,7 @@ public class NetManager : MonoBehaviourPunCallbacks
 
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
-        if (arg0.buildIndex == 1)
+        if (arg0.buildIndex == 2)
         {
             Vector3 pos=Vector3.zero;
             Quaternion rot = Quaternion.identity;
@@ -77,6 +93,31 @@ public class NetManager : MonoBehaviourPunCallbacks
             GameObject newPlayer= PhotonNetwork.Instantiate("Free_Racing_Car_BlueNetwork", pos,rot);
             newPlayer.GetComponent<playerManager>().nickName = PhotonNetwork.NickName;
             RaceManager.instance.me = newPlayer.GetComponent<playerManager>();
+        }
+        else if(arg0.buildIndex == 1 && !backToMainMenu )
+        {
+            playersContainer = MainMenuUiManager.instance.playersContainer;
+            readyBTNText = MainMenuUiManager.instance.readyBTNText;
+            RoomContainer = MainMenuUiManager.instance.RoomContainer;
+            ResetList();
+            //StartMainMenu();
+        }
+        else if (arg0.buildIndex == 1 && backToMainMenu)
+        {
+            canvasManager.instance.switchCanvas(CanvasType.loadingPanel);
+            playersContainer = MainMenuUiManager.instance.playersContainer;
+            readyBTNText = MainMenuUiManager.instance.readyBTNText;
+            RoomContainer = MainMenuUiManager.instance.RoomContainer;
+            ResetList();
+            backToMainMenu = false;
+            if (PhotonNetwork.InLobby)
+            {
+                canvasManager.instance.switchCanvas(CanvasType.mainMenu);
+            }
+            else
+            {
+                PhotonNetwork.JoinLobby();
+            }
         }
     }
 
@@ -106,12 +147,15 @@ public class NetManager : MonoBehaviourPunCallbacks
 
     public void OnReadyClicked()
     {
+        print(PhotonNetwork.MasterClient);
 
         if (PhotonNetwork.IsMasterClient)
         {
+            print("Here");
+
             if (AllReady())
             {
-                PhotonNetwork.LoadLevel(1);
+                PhotonNetwork.LoadLevel(2);
             }
         }
         else
@@ -148,8 +192,7 @@ public class NetManager : MonoBehaviourPunCallbacks
 
     #region Updating RoomList
 
-    public roomListing roominfoPrefab;
-    public GameObject RoomContainer;
+
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         foreach (RoomInfo room in roomList)
