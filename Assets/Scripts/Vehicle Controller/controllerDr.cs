@@ -40,11 +40,13 @@ public class controllerDr : MonoBehaviourPunCallbacks
     public bool handbrake;
 
     public int upgradeLevel = 0 ; //added upgrade level
-    public bool AIControlled;
+    public bool AIControlled=false;
+
+    public missileLauncher missileLauncher;
 
     //hard coded values -
 
-	private WheelFrictionCurve  forwardFriction,sidewaysFriction;
+    private WheelFrictionCurve  forwardFriction,sidewaysFriction;
     private float radius = 6, DownForceValue = 100f ,smoothTime=0.09f , throttle ;// added throttle value
 
     private void Awake() {
@@ -63,7 +65,6 @@ public class controllerDr : MonoBehaviourPunCallbacks
             break;
         }
 
-        AIControlled = false;
         StartCoroutine(timedLoop());
 
     }
@@ -72,6 +73,20 @@ public class controllerDr : MonoBehaviourPunCallbacks
 
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.centerOfMass = centerOfMass.transform.localPosition;
+        if (AIControlled)
+            GetComponent<AIController>().enabled = true;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (missileLauncher.mystate == launcherState.inactive)
+            {
+                missileLauncher.mystate = launcherState.gettingReady;
+                missileLauncher.GettingReady();
+            }
+        }
     }
 
     private void FixedUpdate() {
@@ -304,6 +319,5 @@ public class controllerDr : MonoBehaviourPunCallbacks
             
 		}
 	}
-
 
 }

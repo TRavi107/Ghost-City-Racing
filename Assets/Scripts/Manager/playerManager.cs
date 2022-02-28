@@ -29,6 +29,8 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
     private bool ghostMode=false;
     public bool raceIsOver=false;
+
+    public missileLauncher missileLauncher;
     // Start is called before the first frame update
     void Awake()
     {
@@ -54,6 +56,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             //PhotonNetwork.Instantiate("Free_Racing_Car_BlueNetwork", new Vector3(5, 0, 0), Quaternion.identity);
             Destroy(FindObjectOfType<Camera>().gameObject);
             Destroy(GetComponent<controllerDr>());
+            Destroy(GetComponentInChildren<missileLauncher>());
         }
         else
         {
@@ -88,7 +91,6 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
 
         if (photonView.IsMine)
         {
-            
             if (!raceIsOver) { 
                 if (!ghostMode)
                 {

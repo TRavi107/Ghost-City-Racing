@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (RaceManager.instance.offlineMode)
+            return;
         if(RR==null)
             RR = playerManager.instance.controler;
 
@@ -25,6 +27,8 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (RaceManager.instance.offlineMode)
+            return;
         UpdateNeedle();
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System;
 
 public class CheckPoint
 {
@@ -23,6 +24,7 @@ public class Participant
 {
     public playerManager playerManager;
     public float distanceTravelled;
+    public int position;
 
     public Participant(playerManager manager)
     {
@@ -31,10 +33,9 @@ public class Participant
     }
 }
 
-
-
 public class RaceManager : MonoBehaviourPun
 {
+    public bool offlineMode=false;
     public TMP_Text timerText;
     public TMP_Text messageText;
     public GameObject racerInfoPanel;
@@ -48,7 +49,6 @@ public class RaceManager : MonoBehaviourPun
 
     public List<Participant> raceParticipants =new List<Participant>();
     public List<Transform> AIcheckpoints = new List<Transform>();
-
 
     public static RaceManager instance;
 
@@ -64,6 +64,7 @@ public class RaceManager : MonoBehaviourPun
     private bool startTimer = false;
     private bool startRace = false;
     private bool activateRacerInfoPanel = false;
+
 
 
     public playerManager me;
@@ -82,6 +83,7 @@ public class RaceManager : MonoBehaviourPun
         if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("RPC_StartTimer", RpcTarget.All);
+
         }
         //me.GetComponent<controllerDr>().enabled = false;
         float distance=0;
@@ -95,6 +97,9 @@ public class RaceManager : MonoBehaviourPun
                 distance += Vector3.Distance(checkPointsTransform.GetChild(i).localPosition, checkPointsTransform.GetChild(i+1).localPosition);
 
         }
+        if (offlineMode)
+            return;
+
         me.GetComponent<controllerDr>().enabled = false;
         racerInfoPanel.gameObject.SetActive(true);
         HideMessage();
@@ -128,6 +133,14 @@ public class RaceManager : MonoBehaviourPun
             {
                 timerText.text = "Go...";
                 photonView.RPC("RPC_StartRace", RpcTarget.All);
+            }
+        }
+
+        foreach (Unit unit in FindObjectsOfType<Unit>())
+        {
+            if (!(unit.gameObject.GetComponent<PhotonView>().IsMine))
+            {
+                Destroy(unit);
             }
         }
 
@@ -185,7 +198,6 @@ public class RaceManager : MonoBehaviourPun
     public void PlayerEnter(playerManager player,int wayPoint,bool isOver=false)
     {
         photonView.RPC("RPC_UpdateWayPointTime", RpcTarget.All, player.nickName, wayPoint,isOver);
-        
     }
 
     [PunRPC]
@@ -233,6 +245,25 @@ public class RaceManager : MonoBehaviourPun
 
     }
 
+    public void ShotMissile(string Shooter,Vector3 pos, string target)
+    {
+        GameObject missile = PhotonNetwork.Instantiate("MissileGameobject", pos, Quaternion.identity);
+        missile.GetComponent<Unit>().target = GetPlayerByNickName(target);
+
+        
+    }
+
+    private Transform GetPlayerByNickName(string target)
+    {
+        foreach (Participant item in raceParticipants)
+        {
+            if (item.playerManager.nickName == target)
+                return item.playerManager.gameObject.transform;
+        }
+        print(target + "was not found");
+        return null;
+    }
+
     //private int GetIndex(CheckPoint point,CheckPoint[] points)
     //{
     //    int index = -1;
@@ -247,6 +278,16 @@ public class RaceManager : MonoBehaviourPun
     //    return index;
     //}
 
+    public int GetIndexOfPlayer(string playerName)
+    {
+        for (int i = 0; i < raceParticipants.Count; i++)
+        {
+            if (raceParticipants[i].playerManager.nickName == playerName)
+                return i ;
+        }
+        return 0;
+    }
+
     public void BackToMainMenu()
     {
         NetManager.instance.backToMainMenu = true;
@@ -254,7 +295,6 @@ public class RaceManager : MonoBehaviourPun
         //PhotonNetwork.Destroy(me.gameObject);
         SceneManager.LoadScene(1);
     }
-
 
     private void SortRacerList()
     {
@@ -275,6 +315,7 @@ public class RaceManager : MonoBehaviourPun
             Participant temp = raceParticipants[min_idx];
             raceParticipants[min_idx] = raceParticipants[i];
             raceParticipants[i] = temp;
+
         }
     }
 

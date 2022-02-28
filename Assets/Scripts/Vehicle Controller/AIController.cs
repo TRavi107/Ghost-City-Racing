@@ -58,6 +58,7 @@ public class AIController : MonoBehaviour
             }
 
         }
+        //print(targetCheckPoint);
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / 150) * 2.8f;
 
     }
