@@ -195,6 +195,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6858104256154775322}
   - component: {fileID: 85653393}
+  - component: {fileID: 8384897048265909287}
+  - component: {fileID: 2979718720133648513}
   m_Layer: 0
   m_Name: MissileLauncher
   m_TagString: Untagged
@@ -236,6 +238,45 @@ MonoBehaviour:
   firePos: {fileID: 494412833}
   speed: 1
   reloadTime: 2
+--- !u!114 &8384897048265909287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2518919701608482706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 2979718720133648513}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &2979718720133648513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2518919701608482706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &3490710729812928705
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,11 +323,11 @@ GameObject:
   - component: {fileID: 6026452485704676088}
   - component: {fileID: 3068448824370704410}
   - component: {fileID: -6156855173418855111}
-  - component: {fileID: 7999108935754803812}
   - component: {fileID: 2141399811246135707}
   - component: {fileID: -2954201171294544795}
   - component: {fileID: 2060787699709006252}
   - component: {fileID: 473943431}
+  - component: {fileID: 5413503922207725260}
   m_Layer: 0
   m_Name: Free_Racing_Car_BlueNetwork
   m_TagString: Player
@@ -418,45 +459,12 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 7999108935754803812}
   - {fileID: 2141399811246135707}
   - {fileID: -2954201171294544795}
+  - {fileID: 5413503922207725260}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &7999108935754803812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3490710730049604177}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PositionModel:
-    SynchronizeEnabled: 1
-    TeleportEnabled: 1
-    TeleportIfDistanceGreaterThan: 3
-    InterpolateOption: 2
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 5
-    ExtrapolateOption: 0
-    ExtrapolateSpeed: 1
-    ExtrapolateIncludingRoundTripTime: 1
-    ExtrapolateNumberOfStoredPositions: 1
-  m_RotationModel:
-    SynchronizeEnabled: 1
-    InterpolateOption: 2
-    InterpolateRotateTowardsSpeed: 180
-    InterpolateLerpSpeed: 5
-  m_ScaleModel:
-    SynchronizeEnabled: 0
-    InterpolateOption: 0
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 0
 --- !u!114 &2141399811246135707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,6 +501,7 @@ MonoBehaviour:
   miniMapVision: {fileID: 7861894160891597243}
   DriftSoundDuration: 2
   raceIsOver: 0
+  health: 100
   missileLauncher: {fileID: 85653393}
 --- !u!82 &2060787699709006252
 AudioSource:
@@ -625,6 +634,22 @@ MonoBehaviour:
   - {fileID: 0}
   controller: {fileID: 6026452485704676088}
   currentMode: 0
+--- !u!114 &5413503922207725260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3490710730049604177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &3490710730155038601
 GameObject:
   m_ObjectHideFlags: 0
@@ -1663,7 +1688,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 127
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

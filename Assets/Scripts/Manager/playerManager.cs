@@ -30,6 +30,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
     private bool ghostMode=false;
     public bool raceIsOver=false;
 
+    public int health = 100;
     public missileLauncher missileLauncher;
     // Start is called before the first frame update
     void Awake()
@@ -125,6 +126,14 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
 
+    }
+
+    public void takeDamage(int damage,string attacker)
+    {
+        health -= damage;
+        print(nickName + " took damage of " + damage.ToString());
+        if (health <= 0)
+            health = 0;
     }
 
     private void showLeaderBoard()

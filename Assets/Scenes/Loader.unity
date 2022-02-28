@@ -139,13 +139,12 @@ MonoBehaviour:
   myNickName: Noobie
   playersContainer: {fileID: 0}
   readyBTNText: {fileID: 0}
+  RoomContainer: {fileID: 0}
+  roominfoPrefab: {fileID: 7822893247862752968, guid: 2ab1d9a1e6a37d64eb12abb7e3d2ec4a, type: 3}
   availableRooms: []
   playersInRoom: []
-  playersInScene: []
   playerinfoPrefab: {fileID: 7717530991616777595, guid: d8fd559e2c220014dbf366f726d07b42, type: 3}
-  playAgain: 0
-  roominfoPrefab: {fileID: 7822893247862752968, guid: 2ab1d9a1e6a37d64eb12abb7e3d2ec4a, type: 3}
-  RoomContainer: {fileID: 0}
+  backToMainMenu: 0
 --- !u!4 &200182499855318115
 Transform:
   m_ObjectHideFlags: 0

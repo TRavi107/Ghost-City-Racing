@@ -66,7 +66,7 @@ public class RaceManager : MonoBehaviourPun
     private bool activateRacerInfoPanel = false;
 
 
-
+    public GameObject explosionPrefab;
     public playerManager me;
 
     private void Awake()
@@ -133,14 +133,6 @@ public class RaceManager : MonoBehaviourPun
             {
                 timerText.text = "Go...";
                 photonView.RPC("RPC_StartRace", RpcTarget.All);
-            }
-        }
-
-        foreach (Unit unit in FindObjectsOfType<Unit>())
-        {
-            if (!(unit.gameObject.GetComponent<PhotonView>().IsMine))
-            {
-                Destroy(unit);
             }
         }
 
@@ -248,11 +240,9 @@ public class RaceManager : MonoBehaviourPun
     public void ShotMissile(string Shooter,Vector3 pos, string target)
     {
         GameObject missile = PhotonNetwork.Instantiate("MissileGameobject", pos, Quaternion.identity);
-        missile.GetComponent<Unit>().target = GetPlayerByNickName(target);
-
-        
+        print(missile);
+        missile.GetComponent<MissileController>().target = GetPlayerByNickName(target);
     }
-
     private Transform GetPlayerByNickName(string target)
     {
         foreach (Participant item in raceParticipants)
@@ -263,7 +253,24 @@ public class RaceManager : MonoBehaviourPun
         print(target + "was not found");
         return null;
     }
+    public void DamagePlayer(string damagedPlayer,string attacker,int damage,Vector3 pos)
+    {
+        photonView.RPC("RPC_DamagePlayer", RpcTarget.All, damagedPlayer, attacker,damage,pos);
 
+    }
+
+    [PunRPC]
+    private void RPC_DamagePlayer(string damagedPlayer, string attacker, int damage,Vector3 pos)
+    {
+        foreach (Participant player in raceParticipants)
+        {
+            if (player.playerManager.nickName == damagedPlayer)
+            {
+                player.playerManager.takeDamage(damage, attacker);
+                GameObject.Instantiate(explosionPrefab, pos, Quaternion.identity);
+            }
+        }
+    }
     //private int GetIndex(CheckPoint point,CheckPoint[] points)
     //{
     //    int index = -1;
