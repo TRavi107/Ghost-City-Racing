@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum launcherState
@@ -21,13 +20,7 @@ public class missileLauncher : MonoBehaviour
     public float reloadTime = 2;
 
     float firedTime=0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
 

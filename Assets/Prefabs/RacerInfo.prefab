@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 356f7f7154180e94b9752c1c6dd6ca6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position: {fileID: 1139419901950293081}
   racerName: {fileID: 5067992719301234942}
   time: {fileID: 8571205292516953975}
   raceTime: 0

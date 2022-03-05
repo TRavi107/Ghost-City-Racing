@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using System;
 
 public class CheckPoint
 {
@@ -57,18 +56,18 @@ public class RaceManager : MonoBehaviourPun
     public float lastAcivated;
     public float startedTime;
 
+    public float timeLimit;
+    public GameObject explosionPrefab;
+    public playerManager me;
 
     private float timer;
-    private float totalRaceDistance;
+    private float messageTime=2;
 
     private bool startTimer = false;
     private bool startRace = false;
     private bool activateRacerInfoPanel = false;
 
-
-    public GameObject explosionPrefab;
-    public playerManager me;
-
+    #region UnityFunctions
     private void Awake()
     {
         if (instance == null)
@@ -76,13 +75,18 @@ public class RaceManager : MonoBehaviourPun
             instance = this;
         }
     }
-    // Start is called before the first frame update
+
     void Start()
     {
         timer = counterTime;
         if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("RPC_StartTimer", RpcTarget.All);
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    GameObject missile = PhotonNetwork.Instantiate("MissileGameobject", Vector3.zero, Quaternion.identity);
+            //    GameAssets.instance.ThrowBackToPool(missile.GetComponent<MissileController>());
+            //} 
 
         }
         //me.GetComponent<controllerDr>().enabled = false;
@@ -97,17 +101,26 @@ public class RaceManager : MonoBehaviourPun
                 distance += Vector3.Distance(checkPointsTransform.GetChild(i).localPosition, checkPointsTransform.GetChild(i+1).localPosition);
 
         }
+        HideMessage();
+        racerInfoPanel.SetActive(true);
         if (offlineMode)
             return;
 
         me.GetComponent<controllerDr>().enabled = false;
-        racerInfoPanel.gameObject.SetActive(true);
-        HideMessage();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (!offlineMode)
+        {
+            if ((Time.time - NetManager.instance.startTime) > timeLimit && messageTime>0)
+            {
+                ShowMessage("You have played for more than " + (timeLimit/60).ToString()+"min");
+                messageTime -= Time.deltaTime;
+                if (messageTime < 0)
+                    messageTime = 0;
+            }
+        }
         if (startTimer)
         {
             timer -= Time.deltaTime;
@@ -135,33 +148,17 @@ public class RaceManager : MonoBehaviourPun
                 photonView.RPC("RPC_StartRace", RpcTarget.All);
             }
         }
-
-        //if(activateRacerInfoPanel && lastAcivated >0 )
-        //{
-        //    lastAcivated -= Time.deltaTime;
-        //    if (lastAcivated < 0)
-        //    {
-        //        activateRacerInfoPanel = false;
-        //        lastAcivated = 3;
-        //    }
-        //}
-
-        //if (!activateRacerInfoPanel)
-        //{
-        //    racerInfoPanel.gameObject.SetActive(false);
-
-        //}
-
     }
 
+    #endregion
+
+    #region StartingRace
     [PunRPC]
     private void RPC_StartTimer()
     {
         startTimer = true;
         racerInfoPanel.SetActive(true);
     }
-
-    
 
     [PunRPC]
     private void RPC_StartRace()
@@ -175,18 +172,25 @@ public class RaceManager : MonoBehaviourPun
         timerText.gameObject.SetActive(false);
     }
 
+    #endregion
+
+    #region MessageSection
     public void ShowMessage(string message)
     {
         messageText.gameObject.SetActive(true);
         messageText.text = message;
+        //StartCoroutine("HideMessage");
+        //StopCoroutine("HideMessage");
     }
 
     public void HideMessage()
     {
         messageText.gameObject.SetActive(false);
-
     }
 
+    #endregion
+
+    #region WayPointSection
     public void PlayerEnter(playerManager player,int wayPoint,bool isOver=false)
     {
         photonView.RPC("RPC_UpdateWayPointTime", RpcTarget.All, player.nickName, wayPoint,isOver);
@@ -237,22 +241,16 @@ public class RaceManager : MonoBehaviourPun
 
     }
 
+    #endregion
+
     public void ShotMissile(string Shooter,Vector3 pos, string target)
     {
+        //GameAssets.instance.SpawnFromPool(pos, Quaternion.identity, GetPlayerByNickName(target));
         GameObject missile = PhotonNetwork.Instantiate("MissileGameobject", pos, Quaternion.identity);
-        print(missile);
         missile.GetComponent<MissileController>().target = GetPlayerByNickName(target);
     }
-    private Transform GetPlayerByNickName(string target)
-    {
-        foreach (Participant item in raceParticipants)
-        {
-            if (item.playerManager.nickName == target)
-                return item.playerManager.gameObject.transform;
-        }
-        print(target + "was not found");
-        return null;
-    }
+
+    #region DamagePlayer
     public void DamagePlayer(string damagedPlayer,string attacker,int damage,Vector3 pos)
     {
         photonView.RPC("RPC_DamagePlayer", RpcTarget.All, damagedPlayer, attacker,damage,pos);
@@ -266,24 +264,12 @@ public class RaceManager : MonoBehaviourPun
         {
             if (player.playerManager.nickName == damagedPlayer)
             {
-                player.playerManager.takeDamage(damage, attacker);
+                player.playerManager.TakeDamage(damage, attacker);
                 GameObject.Instantiate(explosionPrefab, pos, Quaternion.identity);
             }
         }
     }
-    //private int GetIndex(CheckPoint point,CheckPoint[] points)
-    //{
-    //    int index = -1;
-    //    for (int i = 0; i < points.Length; i++)
-    //    {
-    //        if (point.wayPointName == points[i].wayPointName)
-    //        {
-    //            index = i;
-    //        }
-    //    }
-
-    //    return index;
-    //}
+    #endregion
 
     public int GetIndexOfPlayer(string playerName)
     {
@@ -295,6 +281,7 @@ public class RaceManager : MonoBehaviourPun
         return 0;
     }
 
+    #region Private Functions
     public void BackToMainMenu()
     {
         NetManager.instance.backToMainMenu = true;
@@ -326,6 +313,17 @@ public class RaceManager : MonoBehaviourPun
         }
     }
 
+    private Transform GetPlayerByNickName(string target)
+    {
+        foreach (Participant item in raceParticipants)
+        {
+            if (item.playerManager.nickName == target)
+                return item.playerManager.gameObject.transform;
+        }
+        print(target + "was not found");
+        return null;
+    }
+
     private void activateRacerInfo(bool showTimer = true)
     {
         foreach (Transform child in racerInfoPanel.transform)
@@ -354,4 +352,8 @@ public class RaceManager : MonoBehaviourPun
         activateRacerInfoPanel = true;
         racerInfoPanel.gameObject.SetActive(true);
     }
+
+    #endregion
+
+
 }

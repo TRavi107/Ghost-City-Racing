@@ -11,27 +11,21 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
     public Color myColor;
     public static playerManager instance;
     public Camera _camera;
-    //public GameObject player;
     public controllerDr controler;
     public string nickName="Noobie";
-    private float maxVelocity;
-
-    private Vector3 remotePosition;
-    private Quaternion remoterotation;
-
     public SpriteRenderer miniMapVision;
-
-    private float lastDriftSoundPlayed = 0;
     public float DriftSoundDuration;
-
-
-    public List<CheckPoint> checkPoints =new List<CheckPoint>() ;
-
-    private bool ghostMode=false;
-    public bool raceIsOver=false;
-
+    public List<CheckPoint> checkPoints = new List<CheckPoint>();
+    public bool raceIsOver = false;
     public int health = 100;
     public missileLauncher missileLauncher;
+
+    private float maxVelocity;
+    private Vector3 remotePosition;
+    private Quaternion remoterotation;
+    private float lastDriftSoundPlayed = 0;
+    private bool ghostMode=false;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -95,7 +89,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             if (!raceIsOver) { 
                 if (!ghostMode)
                 {
-                    checkAFK();
+                    CheckAFK();
                 }
                 else
                 {
@@ -110,7 +104,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             }
             else
             {
-                showLeaderBoard();
+                ShowLeaderBoard();
             }
             return;
         }
@@ -121,14 +115,16 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         else
         {
-            transform.position = Vector3.MoveTowards(transform.position, remotePosition,GetComponent<Rigidbody>().velocity.magnitude);
-            transform.rotation = Quaternion.Lerp(transform.rotation, remoterotation, 0.2f);
+            transform.SetPositionAndRotation(Vector3.MoveTowards(transform.position, 
+                remotePosition,
+                GetComponent<Rigidbody>().velocity.magnitude), 
+                Quaternion.Lerp(transform.rotation, remoterotation, 0.2f));
         }
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / maxVelocity) * 2.8f;
 
     }
 
-    public void takeDamage(int damage,string attacker)
+    public void TakeDamage(int damage,string attacker)
     {
         health -= damage;
         print(nickName + " took damage of " + damage.ToString());
@@ -136,7 +132,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             health = 0;
     }
 
-    private void showLeaderBoard()
+    private void ShowLeaderBoard()
     {
         
         if(RaceManager.instance != null)
@@ -187,24 +183,24 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
             }
 
         }
-        this.transform.position = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).position;
+        transform.position = RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint-5).position;
         this.transform.rotation = Quaternion.identity;
         this.transform.rotation =Quaternion.Euler(RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.x,
             RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.y+180,
             RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.z);
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity/4;
     }
 
-    private void checkAFK()
+    private void CheckAFK()
     {
         float lastCheckPointTime = 0;
-        int check = 0;
+        //int check = 0;
         for (int i = 0; i < checkPoints.Count; i++)
         {
             if (checkPoints[i].Iscompleted)
             {
                 lastCheckPointTime = checkPoints[i].completedTime;
-                check = i;
+                //check = i;
             }
             else
             {
@@ -214,11 +210,11 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         }
         if (lastCheckPointTime != 0)
         {
-            if ((Time.time- lastCheckPointTime) > 2 && (Time.time - lastCheckPointTime) < 7)
+            if ((Time.time- lastCheckPointTime) > 1 && (Time.time - lastCheckPointTime) < 4)
             {
-                RaceManager.instance.ShowMessage("warning out of track return to track");
+                RaceManager.instance.ShowMessage("You missed checkpoint Resseting back to last saved checkpoint");
             }
-            else if((Time.time - lastCheckPointTime) > 7)
+            else if((Time.time - lastCheckPointTime) > 4)
             {
                 ResetToLastCheckPoint();
                 RaceManager.instance.HideMessage();

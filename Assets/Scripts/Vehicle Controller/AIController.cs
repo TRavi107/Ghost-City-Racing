@@ -62,4 +62,9 @@ public class AIController : MonoBehaviour
         GetComponent<AudioSource>().pitch = (GetComponent<Rigidbody>().velocity.magnitude / 150) * 2.8f;
 
     }
+
+    public void AddCheckPoint()
+    {
+        Update();
+    }
 }

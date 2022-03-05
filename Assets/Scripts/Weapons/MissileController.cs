@@ -12,6 +12,10 @@ public class MissileController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Init();
+    }
+    public void Init()
+    {
         agent = GetComponent<NavMeshAgent>();
         if (!gameObject.GetComponent<PhotonView>().IsMine)
         {
@@ -22,7 +26,8 @@ public class MissileController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        agent.destination = target.position;
+        if(target !=null)
+            agent.destination = target.position;
     }
 
     public void OnTriggerEnter(Collider other)

@@ -17,14 +17,14 @@ public class NetManager : MonoBehaviourPunCallbacks
 
     public roomListing roominfoPrefab;
 
-
-
     public List<roomListing> availableRooms;
     public List<playerListing> playersInRoom;
     //public List<playerManager> playersInScene;
     public playerListing playerinfoPrefab;
 
     public bool backToMainMenu = false;
+
+    public float startTime;
 
     #region Static Implementation
     public static NetManager instance;
@@ -50,6 +50,7 @@ public class NetManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.AutomaticallySyncScene = true;
         //canvasManager.instance.switchCanvas(CanvasType.loadingPanel);
+        startTime = Time.time;
     }
 
     void ResetList()
@@ -76,20 +77,10 @@ public class NetManager : MonoBehaviourPunCallbacks
     {
         if (arg0.buildIndex == 2)
         {
-            Vector3 pos=Vector3.zero;
-            Quaternion rot = Quaternion.identity;
-            if (PhotonNetwork.IsMasterClient)
-            {
-                pos = RaceManager.instance.spawnPoints[0].position;
-                rot = RaceManager.instance.spawnPoints[0].rotation;
-            }
-            else
-            {
-                int post = Random.Range(1, 7);
-                pos = RaceManager.instance.spawnPoints[post].position;
-                rot = RaceManager.instance.spawnPoints[post].rotation;
-            }
-
+            int post = PhotonNetwork.LocalPlayer.ActorNumber;
+            Vector3 pos = RaceManager.instance.spawnPoints[post].position;
+            Quaternion rot = RaceManager.instance.spawnPoints[post].rotation;
+            
             GameObject newPlayer= PhotonNetwork.Instantiate("Free_Racing_Car_BlueNetwork", pos,rot);
             newPlayer.GetComponent<playerManager>().nickName = PhotonNetwork.NickName;
             RaceManager.instance.me = newPlayer.GetComponent<playerManager>();
@@ -183,12 +174,7 @@ public class NetManager : MonoBehaviourPunCallbacks
         canvasManager.instance.switchCanvas(CanvasType.loadingPanel);
         PhotonNetwork.JoinOrCreateRoom(_roomName, options, TypedLobby.Default);
     }
-    public override void OnCreatedRoom()
-    {
-        canvasManager.instance.switchCanvas(CanvasType.roomLobby);
-        Debug.Log("Room Created");
-        AddPlayerListing(PhotonNetwork.LocalPlayer,"R");
-    }
+
 
     #region Updating RoomList
 
@@ -230,45 +216,13 @@ public class NetManager : MonoBehaviourPunCallbacks
 
 
     #endregion
-
-    public override void OnCreateRoomFailed(short returnCode, string message)
-    {
-
-    }
     
-
-    public override void OnJoinedRoom()
-    {
-        print("Joined Room");
-        canvasManager.instance.switchCanvas(CanvasType.roomLobby);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            readyBTNText.text = "Start";
-        }
-        else
-        {
-            readyBTNText.text = "Ready";
-            //Need to instantiate for each previous player in the room
-            AddPlayerListing(PhotonNetwork.MasterClient, "R");
-            AddPlayerListing(PhotonNetwork.LocalPlayer);
-        }
-    }
 
     private void RPC_PlayerLeft(Player player)
     {
         RemovePlayerListing(player);
     }
 
-    public override void OnPlayerEnteredRoom(Player player)
-    {
-        print(player.ActorNumber);
-        AddPlayerListing(player);
-    }
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        RemovePlayerListing(otherPlayer);
-    }
 
     public void AddPlayerListing(Player player,string state="n")
     {
@@ -336,6 +290,44 @@ public class NetManager : MonoBehaviourPunCallbacks
         }
     }
 
+    #region Overriden Photon Functions
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+
+    }
+    public override void OnCreatedRoom()
+    {
+        canvasManager.instance.switchCanvas(CanvasType.roomLobby);
+        Debug.Log("Room Created");
+        AddPlayerListing(PhotonNetwork.LocalPlayer, "R");
+    }
+    public override void OnPlayerEnteredRoom(Player player)
+    {
+        print(player.ActorNumber);
+        AddPlayerListing(player);
+    }
+
+    public override void OnJoinedRoom()
+    {
+        print("Joined Room");
+        canvasManager.instance.switchCanvas(CanvasType.roomLobby);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            readyBTNText.text = "Start";
+        }
+        else
+        {
+            readyBTNText.text = "Ready";
+            //Need to instantiate for each previous player in the room
+            AddPlayerListing(PhotonNetwork.MasterClient, "R");
+            AddPlayerListing(PhotonNetwork.LocalPlayer);
+        }
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        RemovePlayerListing(otherPlayer);
+    }
     public override void OnJoinedLobby()
     {
         canvasManager.instance.switchCanvas(CanvasType.mainMenu);
@@ -349,4 +341,6 @@ public class NetManager : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinLobby();
         }
     }
+
+    #endregion
 }
