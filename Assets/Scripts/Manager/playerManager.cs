@@ -188,7 +188,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
         this.transform.rotation =Quaternion.Euler(RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.x,
             RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.y+180,
             RaceManager.instance.checkPointsTransform.GetChild(lastCheckPoint).rotation.eulerAngles.z);
-        GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity/4;
+        GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity/2;
     }
 
     private void CheckAFK()
@@ -291,7 +291,7 @@ public class playerManager : MonoBehaviourPunCallbacks,IPunObservable,IPunInstan
                         {
                             if (other.gameObject.name == "checkpoint 1 (874)")
                             {
-                                print((i, RaceManager.instance.checkPointsTransform.childCount));
+                                //print((i, RaceManager.instance.checkPointsTransform.childCount));
                                 RaceManager.instance.PlayerEnter(this, i, true);
                             }
                             else

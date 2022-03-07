@@ -113,9 +113,9 @@ public class RaceManager : MonoBehaviourPun
     {
         if (!offlineMode)
         {
-            if ((Time.time - NetManager.instance.startTime) > timeLimit && messageTime>0)
+            if ((Time.time - NetManager.instance.startTime) > timeLimit && messageTime > 0)
             {
-                ShowMessage("You have played for more than " + (timeLimit/60).ToString()+"min");
+                ShowMessage("You have played for more than " + (timeLimit / 60).ToString() + "min");
                 messageTime -= Time.deltaTime;
                 if (messageTime < 0)
                     messageTime = 0;

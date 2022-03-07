@@ -113,7 +113,8 @@ public class controllerDr : MonoBehaviourPunCallbacks
         totalPower = carConstant.enginePower.Evaluate(engineRPM) * (carConstant.gears[gearNum]) * (vertical + throttle);//add upgraded throttle
         float velocity  = 0.0f;
         engineRPM = Mathf.SmoothDamp(engineRPM,(1000+Mathf.Abs(wheelsRPM) * 3.6f * (carConstant.gears[gearNum])), ref velocity , smoothTime);
-        if(engineRPM > carConstant.maxRPM + 500) engineRPM = carConstant.maxRPM +  500 ;
+        if(engineRPM > carConstant.maxRPM + 500) 
+            engineRPM = carConstant.maxRPM +  500 ;
         moveVehicle();
 
     }

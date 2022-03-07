@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public GameObject needle;
     public TMP_Text speed;
     public TMP_Text gear;
+    public TMP_Text health;
     public float startPosition, endPosition;
 
     public float vehicleSpeed;
@@ -40,5 +41,6 @@ public class UIManager : MonoBehaviour
         needle.transform.eulerAngles = new Vector3(0, 0, (startPosition - temp * desiredPosition));
         speed.text = vehicleSpeed.ToString("00");
         gear.text = (RR.gearNum +1).ToString("0");
+        health.text = RaceManager.instance.me.health.ToString();
     }
 }
